@@ -8,7 +8,7 @@ import com.back.standard.dto.member.type1.MemberSearchSortType1
 import org.springframework.data.domain.PageRequest
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import java.util.*
+import java.util.Optional
 
 @Service
 class MemberFacade(
@@ -27,16 +27,8 @@ class MemberFacade(
             throw AppException("409-1", "이미 존재하는 회원 아이디입니다.")
         }
 
-        val member = memberRepository.save(
-            Member(
-                0,
-                username,
-                password,
-                nickname,
-                UUID.randomUUID().toString(),
-                profileImgUrl = profileImgUrl
-            )
-        )
+        val member = memberRepository.save(Member(username, password, nickname))
+        profileImgUrl?.let { member.profileImgUrl = it }
 
         return member
     }

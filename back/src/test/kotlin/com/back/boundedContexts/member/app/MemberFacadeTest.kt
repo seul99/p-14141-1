@@ -1,5 +1,6 @@
 package com.back.boundedContexts.member.app
 
+import com.back.boundedContexts.member.out.shared.MemberAttrRepository
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
@@ -14,6 +15,9 @@ class MemberFacadeTest {
     @Autowired
     private lateinit var memberFacade: MemberFacade
 
+    @Autowired
+    private lateinit var memberAttrRepository: MemberAttrRepository
+
     @Test
     fun `회원 생성에서 profileImgUrl 을 함께 넘기면 기본 이미지 대신 저장된 이미지가 사용된다`() {
         val member = memberFacade.join(
@@ -25,6 +29,9 @@ class MemberFacadeTest {
 
         assertThat(member.profileImgUrl).isEqualTo("https://example.com/profile-user.png")
         assertThat(member.profileImgUrlOrDefault).isEqualTo("https://example.com/profile-user.png")
+        assertThat(memberAttrRepository.findBySubjectAndName(member, "profileImgUrl"))
+            .extracting("value")
+            .isEqualTo("https://example.com/profile-user.png")
     }
 
     @Test
@@ -41,6 +48,9 @@ class MemberFacadeTest {
         assertThat(member.name).isEqualTo("변경된유저1")
         assertThat(member.profileImgUrl).isEqualTo("https://example.com/updated-user1.png")
         assertThat(member.profileImgUrlOrDefault).isEqualTo("https://example.com/updated-user1.png")
+        assertThat(memberAttrRepository.findBySubjectAndName(member, "profileImgUrl"))
+            .extracting("value")
+            .isEqualTo("https://example.com/updated-user1.png")
     }
 
     @Test

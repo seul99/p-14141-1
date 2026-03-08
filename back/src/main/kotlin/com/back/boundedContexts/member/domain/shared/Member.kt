@@ -3,10 +3,14 @@ package com.back.boundedContexts.member.domain.shared
 import com.back.global.app.AppConfig
 import com.back.global.jpa.domain.AfterDDL
 import com.back.global.jpa.domain.BaseTime
+import com.back.boundedContexts.member.out.shared.MemberAttrRepository
 import jakarta.persistence.*
 import jakarta.persistence.GenerationType.SEQUENCE
 import org.hibernate.annotations.DynamicUpdate
 import org.hibernate.annotations.NaturalId
+import java.util.UUID
+
+private const val PROFILE_IMG_URL = "profileImgUrl"
 
 @Entity
 @DynamicUpdate
@@ -47,13 +51,23 @@ class Member(
 
     @field:Column(unique = true, nullable = false)
     var apiKey: String,
-
-    @field:Column(columnDefinition = "TEXT")
-    var profileImgUrl: String? = null,
 ) : BaseTime(id), HasMember {
-    constructor(id: Int) : this(id, "", null, "", "", null)
+    constructor(id: Int) : this(id, "", null, "", "")
 
-    constructor(id: Int, username: String, nickname: String) : this(id, username, null, nickname, "", null)
+    constructor(id: Int, username: String, nickname: String) : this(id, username, null, nickname, "")
+
+    constructor(username: String, password: String?, nickname: String) : this(
+        0,
+        username,
+        password,
+        nickname,
+        UUID.randomUUID().toString(),
+    )
+
+    companion object {
+        lateinit var attrRepository_: MemberAttrRepository
+        val attrRepository by lazy { attrRepository_ }
+    }
 
     override val member: Member
         get() = this
@@ -64,9 +78,22 @@ class Member(
     val isAdmin: Boolean
         get() = username in setOf("system", "admin")
 
+    private val profileImgUrlAttr: MemberAttr
+        get() = getOrPutAttr(PROFILE_IMG_URL) {
+            attrRepository.findBySubjectAndName(this, PROFILE_IMG_URL)
+                ?: MemberAttr(0, this, PROFILE_IMG_URL, "")
+        }
+
+    var profileImgUrl: String
+        get() = profileImgUrlAttr.value
+        set(value) {
+            profileImgUrlAttr.value = value
+            attrRepository.save(profileImgUrlAttr)
+        }
+
     val profileImgUrlOrDefault: String
         get() = profileImgUrl
-            ?.takeIf { it.isNotBlank() }
+            .takeIf { it.isNotBlank() }
             ?: "https://placehold.co/600x600?text=U_U"
 
     val redirectToProfileImgUrlOrDefault: String
