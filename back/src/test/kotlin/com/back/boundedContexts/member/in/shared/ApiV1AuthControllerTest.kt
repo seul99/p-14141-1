@@ -12,6 +12,7 @@ import org.springframework.http.MediaType
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.delete
+import org.springframework.test.web.servlet.get
 import org.springframework.test.web.servlet.post
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.handler
 import org.springframework.transaction.annotation.Transactional
@@ -137,5 +138,35 @@ class ApiV1AuthControllerTest {
         assertThat(accessTokenCookie.maxAge).isEqualTo(0)
         assertThat(accessTokenCookie.path).isEqualTo("/")
         assertThat(accessTokenCookie.isHttpOnly).isTrue
+    }
+
+    @Test
+    fun `내 정보 조회는 apiKey 쿠키가 있으면 회원 정보를 반환한다`() {
+        val member = memberFacade.findByUsername("user1")!!
+
+        mvc.get("/member/api/v1/auth/me") {
+            cookie(Cookie("apiKey", member.apiKey))
+        }.andExpect {
+            status { isOk() }
+            match(handler().handlerType(ApiV1AuthController::class.java))
+            match(handler().methodName("me"))
+            jsonPath("$.id") { value(member.id) }
+            jsonPath("$.createdAt") { value(startsWith(member.createdAt.toString().take(20))) }
+            jsonPath("$.modifiedAt") { value(startsWith(member.modifiedAt.toString().take(20))) }
+            jsonPath("$.username") { value(member.username) }
+            jsonPath("$.nickname") { value(member.nickname) }
+        }
+    }
+
+    @Test
+    fun `내 정보 조회는 apiKey 쿠키가 없으면 401을 반환한다`() {
+        mvc.get("/member/api/v1/auth/me")
+            .andExpect {
+                status { isUnauthorized() }
+                match(handler().handlerType(ApiV1AuthController::class.java))
+                match(handler().methodName("me"))
+                jsonPath("$.resultCode") { value("401-1") }
+                jsonPath("$.msg") { value("로그인 후 이용해주세요.") }
+            }
     }
 }

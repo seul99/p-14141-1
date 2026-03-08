@@ -3,13 +3,16 @@ package com.back.boundedContexts.member.`in`.shared
 import com.back.boundedContexts.member.app.MemberFacade
 import com.back.boundedContexts.member.app.shared.AuthTokenService
 import com.back.boundedContexts.member.dto.MemberDto
+import com.back.boundedContexts.member.dto.MemberWithUsernameDto
 import com.back.global.exception.app.AppException
 import com.back.global.rsData.RsData
+import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.Cookie
 import jakarta.servlet.http.HttpServletResponse
 import jakarta.validation.Valid
 import jakarta.validation.constraints.NotBlank
 import jakarta.validation.constraints.Size
+import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.PostMapping
@@ -87,5 +90,21 @@ class ApiV1AuthController(
         })
 
         return RsData("200-1", "로그아웃 되었습니다.")
+    }
+
+    @GetMapping("/me")
+    @Transactional(readOnly = true)
+    fun me(
+        request: HttpServletRequest,
+    ): MemberWithUsernameDto {
+        val apiKey = request.cookies
+            ?.firstOrNull { it.name == "apiKey" }
+            ?.value
+            ?: throw AppException("401-1", "로그인 후 이용해주세요.")
+
+        val member = memberFacade.findByApiKey(apiKey)
+            ?: throw AppException("401-1", "로그인 후 이용해주세요.")
+
+        return MemberWithUsernameDto(member)
     }
 }
