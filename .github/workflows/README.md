@@ -53,7 +53,8 @@
 ## 🧩 NPMplus SSE 버퍼링 주의사항
 
 `NPMplus` 템플릿 기준으로 `npmplus_proxy_response_buffering: true`면 Nginx의 `proxy_buffering off`가 적용됩니다.  
-즉, 값이 `true`일 때 SSE에서 버퍼링이 꺼집니다.
+즉, 값이 `true`일 때 SSE에서 버퍼링이 꺼집니다.  
+⚠️ 오해하지 말 것: **true=켜짐**이 아니라 **true=버퍼링 OFF**입니다.
 
 현재 `deploy.yml`의 Proxy Host 생성/전환 payload는 다음처럼 설정되어 있습니다.
 
@@ -63,8 +64,8 @@
   "forward_scheme": "http",
   "forward_host": "...",
   "forward_port": 8080,
-  "npmplus_proxy_response_buffering": false
+  "npmplus_proxy_response_buffering": true
 }
 ```
 
-실시간 스트리밍이 필요하면 문서 기준으로는 `npmplus_proxy_response_buffering: true`로 조정해야 합니다.
+`deploy.yml`에는 `NPMPLUS_SSE_RESPONSE_BUFFERING_OFF: true`로 고정해 두어 `/sse/`가 항상 스트리밍에 맞게 동작하도록 했습니다.

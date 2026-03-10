@@ -12,6 +12,7 @@ env:
   DOCKER_NETWORK: common # 도커 네트워크
   BACK_DIR: back # Dockerfile 위치
   NPM_BASE_URL: https://127.0.0.1:81 # NPMplus 관리 API 베이스 URL
+  NPMPLUS_SSE_RESPONSE_BUFFERING_OFF: "true" # ⚠️ 오해하지 말 것: true = proxy_buffering off
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }} # 커밋이 짧은 시간안에 몰려도 최신 커밋에 대해서만 액션이 수행되도록
@@ -201,12 +202,15 @@ jobs:
 
             if [[ -z "${PROXY_ID}" || "${PROXY_ID}" == "null" ]]; then
               echo "📝 Proxy host not found for ${APP_1_DOMAIN}, creating..."
+              # ⚠️ 오해하지 말 것:
+              # npmplus_proxy_response_buffering는 이름상 'Disable' 이지만 실제 동작은 true면 proxy_buffering off다.
               PROXY_ID=$(curl -sk -b "${COOKIE_JAR}" -X POST "${NPM_BASE_URL}/api/nginx/proxy-hosts" \
                 -H "Content-Type: application/json" \
                 -d "$(jq -nc \
                   --arg domain "${APP_1_DOMAIN}" \
                   --arg host "${SLOT1}" \
                   --argjson port ${PORT_IN} \
+                  --argjson sseResponseBufferingOff ${NPMPLUS_SSE_RESPONSE_BUFFERING_OFF} \
                   '{
                     domain_names: [$domain],
                     forward_scheme: "http",
@@ -228,7 +232,7 @@ jobs:
                         forward_scheme: "http",
                         forward_host: $host,
                         forward_port: $port,
-                        npmplus_proxy_response_buffering: false
+                        npmplus_proxy_response_buffering: $sseResponseBufferingOff
                       }
                     ],
                     meta: {letsencrypt_agree: false, dns_challenge: false}
@@ -294,10 +298,13 @@ jobs:
             # ---------------------------------------------------------
             # 6) 업스트림 전환 (기존 설정 조회 후 forward_host/locations만 덮어씀)
             # ---------------------------------------------------------
+            # ⚠️ 오해하지 말 것:
+            # true는 '사용'을 뜻하지 않고, NPMplus 템플릿에서 proxy_buffering off(버퍼링 OFF)의 의미로 쓰인다.
             CURRENT_CFG=$(curl -sk -b "${COOKIE_JAR}" -X GET "${NPM_BASE_URL}/api/nginx/proxy-hosts/${PROXY_ID}")
             NEW_CFG=$(echo "${CURRENT_CFG}" | jq \
               --arg host "${GREEN}" \
               --argjson port ${PORT_IN} \
+              --argjson sseResponseBufferingOff ${NPMPLUS_SSE_RESPONSE_BUFFERING_OFF} \
               '{
                 access_list_id,
                 advanced_config,
@@ -318,7 +325,7 @@ jobs:
                     forward_scheme: "http",
                     forward_host: $host,
                     forward_port: $port,
-                    npmplus_proxy_response_buffering: false
+                    npmplus_proxy_response_buffering: $sseResponseBufferingOff
                   }
                 ],
                 meta,
