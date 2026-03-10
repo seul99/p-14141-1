@@ -10,12 +10,14 @@ import org.springframework.http.CacheControl
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.transaction.annotation.Transactional
+import org.springframework.validation.annotation.Validated
 import org.springframework.web.bind.annotation.*
 import java.net.URI
 import java.util.concurrent.TimeUnit
 
 @RestController
 @RequestMapping("/member/api/v1/members")
+@Validated
 class ApiV1MemberController(
     private val memberFacade: MemberFacade,
 ) {

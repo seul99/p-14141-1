@@ -10,11 +10,13 @@ import com.back.boundedContexts.post.event.*
 import com.back.standard.dto.EventPayload
 import com.back.standard.util.Ut
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 
 @Service
 class MemberActionLogFacade(
     private val memberActionLogRepository: MemberActionLogRepository,
 ) {
+    @Transactional
     fun save(event: EventPayload) {
         when (event) {
             is PostWrittenEvent -> save(event)

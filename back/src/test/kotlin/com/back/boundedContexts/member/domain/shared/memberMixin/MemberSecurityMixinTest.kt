@@ -1,4 +1,4 @@
-package com.back.boundedContexts.member.domain.shared.memberExtensions
+package com.back.boundedContexts.member.domain.shared.memberMixin
 
 import com.back.boundedContexts.member.app.MemberFacade
 import org.assertj.core.api.Assertions.assertThat
@@ -11,7 +11,7 @@ import org.springframework.transaction.annotation.Transactional
 @SpringBootTest
 @ActiveProfiles("test")
 @Transactional
-class MemberSecurityExtensionsTest {
+class MemberSecurityMixinTest {
     @Autowired
     private lateinit var memberFacade: MemberFacade
 

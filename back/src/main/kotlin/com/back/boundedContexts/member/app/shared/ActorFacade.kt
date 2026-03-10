@@ -13,6 +13,7 @@ class ActorFacade(
     private val authTokenService: AuthTokenService,
     private val memberRepository: MemberRepository,
 ) {
+    @Transactional(readOnly = true)
     fun memberOf(securityUser: SecurityUser): Member =
         MemberProxy(getReferenceById(securityUser.id), securityUser.id, securityUser.username, securityUser.nickname)
 
@@ -22,12 +23,15 @@ class ActorFacade(
     @Transactional(readOnly = true)
     fun findByApiKey(apiKey: String): Member? = memberRepository.findByApiKey(apiKey)
 
+    @Transactional(readOnly = true)
     fun genAccessToken(member: Member): String = authTokenService.genAccessToken(member)
 
+    @Transactional(readOnly = true)
     fun payload(accessToken: String) = authTokenService.payload(accessToken)
 
     @Transactional(readOnly = true)
     fun findById(id: Int): Member? = memberRepository.findById(id).getOrNull()
 
+    @Transactional(readOnly = true)
     fun getReferenceById(id: Int): Member = memberRepository.getReferenceById(id)
 }

@@ -5,6 +5,7 @@ import com.back.boundedContexts.member.app.shared.ActorFacade
 import com.back.boundedContexts.member.app.shared.AuthTokenService
 import com.back.boundedContexts.member.dto.MemberDto
 import com.back.boundedContexts.member.dto.MemberWithUsernameDto
+import com.back.global.app.app.AppFacade
 import com.back.global.exception.app.AppException
 import com.back.global.rsData.RsData
 import com.back.global.security.domain.SecurityUser
@@ -19,11 +20,13 @@ import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.validation.annotation.Validated
 import org.springframework.web.bind.annotation.RestController
 import org.springframework.security.core.annotation.AuthenticationPrincipal
 
 @RestController
 @RequestMapping("/member/api/v1/auth")
+@Validated
 class ApiV1AuthController(
     private val memberFacade: MemberFacade,
     private val actorFacade: ActorFacade,
@@ -91,6 +94,10 @@ class ApiV1AuthController(
         addCookie(Cookie(name, value).apply {
             path = "/"
             isHttpOnly = true
+            domain = AppFacade.siteCookieDomain
+            secure = true
+            setAttribute("SameSite", "Strict")
+            maxAge = 60 * 60 * 24 * 365
         })
     }
 
@@ -98,6 +105,9 @@ class ApiV1AuthController(
         addCookie(Cookie(name, "").apply {
             path = "/"
             isHttpOnly = true
+            domain = AppFacade.siteCookieDomain
+            secure = true
+            setAttribute("SameSite", "Strict")
             maxAge = 0
         })
     }

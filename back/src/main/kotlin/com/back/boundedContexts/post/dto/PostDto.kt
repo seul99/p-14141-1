@@ -10,7 +10,7 @@ data class PostDto @JsonCreator constructor(
     val modifiedAt: Instant,
     val authorId: Int,
     val authorName: String,
-    val authorProfileImgUrl: String,
+    val authorProfileImageUrl: String,
     val title: String,
     val published: Boolean,
     val listed: Boolean,

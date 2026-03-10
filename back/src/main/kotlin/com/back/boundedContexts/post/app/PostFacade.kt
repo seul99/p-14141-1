@@ -25,6 +25,7 @@ class PostFacade(
     private val postLikeRepository: PostLikeRepository,
     private val eventPublisher: EventPublisher,
 ) {
+    @Transactional(readOnly = true)
     fun count(): Long = postRepository.count()
 
     @Transactional
@@ -46,8 +47,10 @@ class PostFacade(
         return savedPost
     }
 
+    @Transactional(readOnly = true)
     fun findById(id: Int): Post? = postRepository.findById(id).getOrNull()
 
+    @Transactional(readOnly = true)
     fun findLatest(): Post? = postRepository.findFirstByOrderByIdDesc()
 
     @Transactional
@@ -139,6 +142,7 @@ class PostFacade(
         post.incrementHitCount()
     }
 
+    @Transactional(readOnly = true)
     fun findLikedPostIds(liker: Member?, posts: List<Post>): Set<Int> {
         if (liker == null || posts.isEmpty()) return emptySet()
         return postLikeRepository
@@ -147,6 +151,7 @@ class PostFacade(
             .toSet()
     }
 
+    @Transactional(readOnly = true)
     fun findPagedByKw(
         kw: String,
         sort: PostSearchSortType1,
@@ -157,6 +162,7 @@ class PostFacade(
         PageRequest.of(page - 1, pageSize, sort.sortBy)
     )
 
+    @Transactional(readOnly = true)
     fun findPagedByAuthor(
         author: Member,
         kw: String,
@@ -169,6 +175,7 @@ class PostFacade(
         PageRequest.of(page - 1, pageSize, sort.sortBy)
     )
 
+    @Transactional(readOnly = true)
     fun findTemp(author: Member): Post? =
         postRepository.findFirstByAuthorAndTitleAndPublishedFalseOrderByIdAsc(author, "임시글")
 
