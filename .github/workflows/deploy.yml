@@ -4,11 +4,11 @@ name: deploy
 # 전역 환경변수
 # =========================
 env:
-  IMAGE_REPOSITORY: mall-1 # GHCR 이미지 리포지토리명(소유자 포함 X)
-  CONTAINER_1_NAME: mall_1_1 # 슬롯1(고정 이름)
-  CONTAINER_2_NAME: mall_1_2 # 슬롯2(고정 이름)
+  IMAGE_REPOSITORY: blog-1 # GHCR 이미지 리포지토리명(소유자 포함 X)
+  CONTAINER_1_NAME: blog_1_1 # 슬롯1(고정 이름)
+  CONTAINER_2_NAME: blog_1_2 # 슬롯2(고정 이름)
   CONTAINER_PORT: 8080 # 컨테이너 내부 포트(스프링부트)
-  EC2_INSTANCE_TAG_NAME: mall-ec2-1 # 배포 대상 EC2 Name 태그
+  EC2_INSTANCE_TAG_NAME: blog-ec2-1 # 배포 대상 EC2 Name 태그
   DOCKER_NETWORK: common # 도커 네트워크
   BACK_DIR: back # Dockerfile 위치
   NPM_BASE_URL: https://127.0.0.1:81 # NPMplus 관리 API 베이스 URL

@@ -5,10 +5,10 @@ variable "region" {
 
 variable "prefix" {
   description = "Prefix for all resources"
-  default     = "mall"
+  default     = "blog"
 }
 
 variable "app_1_domain" {
   description = "app_1 domain"
-  default     = "api.mall.jhs512.site"
+  default     = "api.blog.jhs512.site"
 }
