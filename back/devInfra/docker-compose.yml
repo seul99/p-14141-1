@@ -15,7 +15,7 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: lldj123414
       POSTGRES_DATABASE: postgres
-      POSTGRES_DATABASES: ${DB_BASE_NAME:-blog}_dev,${DB_BASE_NAME:-blog}_test
+      POSTGRES_DATABASES: ${DB_BASE_NAME:-mall}_dev,${DB_BASE_NAME:-mall}_test
       TZ: Asia/Seoul
     command: >
       postgres

@@ -35,7 +35,7 @@ RUN set -e \
  && su postgres -c "initdb -D $PGDATA --auth=trust" \
  && su postgres -c "pg_ctl -D $PGDATA start -o '-c listen_addresses=localhost' -w" \
  && su postgres -c "psql -c \"ALTER USER postgres PASSWORD 'lldj123414';\"" \
- && su postgres -c "psql -c \"CREATE DATABASE blog_test;\"" \
+ && su postgres -c "psql -c \"CREATE DATABASE mall_test;\"" \
  && redis-server --daemonize yes --requirepass lldj123414 \
  && ./gradlew build --no-daemon \
  && su postgres -c "pg_ctl -D $PGDATA stop -w"

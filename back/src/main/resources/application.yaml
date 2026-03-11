@@ -93,7 +93,7 @@ logging:
     org.hibernate.orm.jdbc.batch: TRACE
     org.springframework.transaction.interceptor: TRACE
 custom:
-  dbBaseName: blog
+  dbBaseName: mall
   dev:
     cookieDomain: localhost
     frontUrl: "http://${custom.dev.cookieDomain}:3000"
@@ -111,7 +111,7 @@ custom:
     redisHost: localhost
     redisDatabase: 1
   prod:
-    cookieDomain: blog.jhs512.site
+    cookieDomain: mall.ddul.site
     frontUrl: "https://www.${custom.prod.cookieDomain}"
     backUrl: "https://api.${custom.prod.cookieDomain}"
     dbHost: pg_1
